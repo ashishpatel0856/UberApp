@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken')
 
-const usrSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     fullname: {
         firstname: {
             type: String,
-            required: ture,
+            required: true,
             minlength: [3,'First name must be at least 3 characters long'],
         },
         lastname: {
