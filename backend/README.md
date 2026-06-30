@@ -142,3 +142,60 @@ Example request body:
   ]
 }
 ```
+
+## GET /users/profile
+
+Get the authenticated user's profile.
+
+### Endpoint
+
+`GET /users/profile`
+
+### Headers
+
+- `Authorization` (optional): `Bearer <jwt-token>`
+- The endpoint also supports the auth cookie `token` if the client sends it.
+
+### Success Response
+
+- Status: `200 OK`
+- Body:
+
+```json
+{
+  "user": {
+    "_id": "<user-id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+### Authentication Errors
+
+- Status: `401 Unauthorized`
+- Body:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+- Status: `400 Bad Request`
+- Body:
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
