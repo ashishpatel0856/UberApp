@@ -33,9 +33,13 @@ const userSchema = new mongoose.Schema({
     },
 })
 
+const jwt = require('jsonwebtoken');
+
 userSchema.methods.generateAuthToken = function () {
-    const token = JsonWebTokenError.sign({ _id: this._id},process.env.JWT_SECRET);
-    return token;
+    return jwt.sign(
+        { _id: this._id },
+        process.env.JWT_SECRET
+    );
 }
 
 userSchema.methods.comparePassword = async function (password) {
@@ -43,8 +47,8 @@ userSchema.methods.comparePassword = async function (password) {
     
 }
 
-userSchema.methods.hashPassword = async function (password) {
-    return await bcrypt.hash(password,10)
+userSchema.statics.hashPassword = async function (password) {
+    return await bcrypt.hash(password,10);
 }
 
 const userModel = mongoose.model('user', userSchema);

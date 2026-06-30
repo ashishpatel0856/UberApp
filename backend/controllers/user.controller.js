@@ -8,13 +8,14 @@ module.exports.registerUser = async (req, res, next) => {
         return res.status(400)
             .json({ errors: errors.array() });
     }
-    const { firstname, lastname, email, password } = req.body;
+
+
+    const { fullname, email, password } = req.body;
 
     const hashedPassword = await userModel.hashPassword(password);
 
     const user = await userService.createUser({
-        firstname: fullname.firstname,
-        lastname: fullname.lastname,
+        fullname,
         email,
         password: hashedPassword
     });
@@ -36,7 +37,7 @@ module.exports.loginUser = async (req, res, next) => {
     if (!user) {
         return res.status(401).json({ message: 'Invalid email or password' });
     }
-    const isMatach = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
         return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -52,6 +53,6 @@ module.exports.loginUser = async (req, res, next) => {
 }
 
 
-module.exports.getUserProfile = async (req,res,next) =>{
-  res.status(200).json({user: req.user}); 
+module.exports.getUserProfile = async (req, res, next) => {
+    res.status(200).json({ user: req.user });
 }
