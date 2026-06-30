@@ -185,6 +185,41 @@ Get the authenticated user's profile.
 }
 ```
 
+## GET /users/logout
+
+Log out the authenticated user by clearing the auth token and blacklisting it.
+
+### Endpoint
+
+`GET /users/logout`
+
+### Headers
+
+- `Authorization` (optional): `Bearer <jwt-token>`
+- The endpoint also supports the auth cookie `token` if the client sends it.
+
+### Success Response
+
+- Status: `200 OK`
+- Body:
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Authentication Errors
+
+- Status: `401 Unauthorized`
+- Body:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
 - Status: `400 Bad Request`
 - Body:
 
