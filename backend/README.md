@@ -234,3 +234,92 @@ Log out the authenticated user by clearing the auth token and blacklisting it.
   ]
 }
 ```
+
+## POST /captains/register
+
+Create a new captain account.
+
+### Endpoint
+
+`POST /captains/register`
+
+### Request Body
+
+The request must be sent as JSON and include the following fields:
+
+- `fullname.firstname` (string, required): Captain first name, minimum 3 characters.
+- `fullname.lastname` (string, optional): Captain last name, minimum 3 characters if provided.
+- `email` (string, required): Valid email address.
+- `password` (string, required): Password, minimum 8 characters.
+- `vehicle.color` (string, required): Vehicle color, minimum 3 characters.
+- `vehicle.plate` (string, required): Vehicle plate number, minimum 3 characters.
+- `vehicle.capacity` (number, required): Vehicle capacity, minimum 1.
+- `vehicle.vehicleType` (string, required): One of `car`, `motorcycle`, or `auto`.
+
+Example request body:
+
+```json
+{
+  "fullname": {
+    "firstname": "Amit",
+    "lastname": "Sharma"
+  },
+  "email": "amit.sharma@example.com",
+  "password": "secret1234",
+  "vehicle": {
+    "color": "Black",
+    "plate": "MH12AB1234",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+### Success Response
+
+- Status: `201 Created`
+- Body:
+
+```json
+{
+  "message": "Captain registered successfully",
+  "token": "<jwt-token>",
+  "captain": {
+    "_id": "<captain-id>",
+    "fullname": {
+      "firstname": "Amit",
+      "lastname": "Sharma"
+    },
+    "email": "amit.sharma@example.com",
+    "vehicle": {
+      "color": "Black",
+      "plate": "MH12AB1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+### Validation Errors
+
+- Status: `400 Bad Request`
+- Body:
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Vehicle type is required",
+      "param": "vehicle.vehicleType",
+      "location": "body"
+    }
+  ]
+}
+```
+
+### Notes
+
+- The endpoint validates the captain email, password, and vehicle details.
+- The controller checks whether a captain already exists with the same email before registration.
+- The response includes an authentication token and the created captain object.

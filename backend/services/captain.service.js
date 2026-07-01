@@ -21,5 +21,5 @@ module.exports.createCaptain = async({
             vehicleType
         }
     });
-    return captain;
+    return captain.save();
 }
