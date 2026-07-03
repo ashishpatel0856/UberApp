@@ -50,10 +50,10 @@ const Captainlogin = () => {
                 </form>
             </div>
             <div>
-                <Link to='/captain-login' className='bg-[#d5622d] mt-5 flex items-center justify-center text-white font-semibold rounded px-4 py-2  w-full text-lg placeholder:text-base '>Sign as a User</Link>
+                <Link to='/login' className='bg-[#d5622d] mt-5 flex items-center justify-center text-white font-semibold rounded px-4 py-2  w-full text-lg placeholder:text-base '>Sign as a User</Link>
             </div>
         </div>
-    )
+        )
 }
 
 export default Captainlogin
