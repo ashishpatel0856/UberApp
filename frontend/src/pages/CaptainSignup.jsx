@@ -152,12 +152,13 @@ const CaptainSignup = () => {
             </div>
 
             <button className='bg-[#111] mt-5 text-white font-semibold rounded px-4 py-2  w-full text-lg placeholder:text-base '>Create Captain Account</button>
+                      <p className='text-center mt-0'>Already have an account?<Link to='/captain-login' className='text-blue-600'>Login here</Link></p>
+
           </form>
-          <p className='text-center'>Already have an account?<Link to='/captain-login' className='text-blue-600'>Login here</Link></p>
 
         </div>
         <div>
-          <p className=' text-[10px] leading-tight text-gray-600'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Service</span>.</p>
+          <p className=' text-[10px] leading-tight text-center text-gray-600'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Service</span>.</p>
         </div>
       </div>
     </div>
