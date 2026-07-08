@@ -3,6 +3,8 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import 'remixicon/fonts/remixicon.css'
 import LocationSearchPanel from '../components/LocationSearchPanel';
+import VehiclePanel from '../components/VehiclePanel';
+import ConfirmedRide from '../components/ConfirmedRide';
 
 const Home = () => {
 
@@ -12,7 +14,9 @@ const Home = () => {
   const panelRef = useRef(null)
   const panelCloseRef = useRef(null)
   const vehiclePanelRef = useRef(null)
-  const [vehiclePanel,setVehiclePanel] =useState(false)
+  const confirmRidePanelRef = useRef(null)
+  const [vehiclePanel, setVehiclePanel] = useState(false)
+  const [confirmRidePanel,setConfirmRidePanel] = useState(false)
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -42,17 +46,29 @@ const Home = () => {
     }
   }, [panelOpen])
 
-   useGSAP(function () {
-        if (vehiclePanel) {
-            gsap.to(vehiclePanelRef.current, {
-                transform: 'translateY(0)'
-            })
-        } else {
-            gsap.to(vehiclePanelRef.current, {
-                transform: 'translateY(100%)'
-            })
-        }
-    }, [ vehiclePanel ])
+  useGSAP(function () {
+    if (vehiclePanel) {
+      gsap.to(vehiclePanelRef.current, {
+        transform: 'translateY(0)'
+      })
+    } else {
+      gsap.to(vehiclePanelRef.current, {
+        transform: 'translateY(100%)'
+      })
+    }
+  }, [vehiclePanel])
+
+    useGSAP(function () {
+    if (confirmRidePanel) {
+      gsap.to(confirmRidePanelRef.current, {
+        transform: 'translateY(0)'
+      })
+    } else {
+      gsap.to(confirmRidePanelRef.current, {
+        transform: 'translateY(100%)'
+      })
+    }
+  }, [confirmRidePanel])
 
   return (
     <div className='h-screen relative overflow-hidden'>
@@ -100,48 +116,16 @@ const Home = () => {
         </div>
 
         <div ref={panelRef} className='bg-white h-0'>
-          <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel ={setVehiclePanel} />
+          <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel={setVehiclePanel} />
         </div>
       </div>
 
-      <div ref={vehiclePanelRef} className='fixed w-full z-10 bg-white bottom-0 px-3 py-10 pt-14'>
-        <h5
-        onClick={() =>{
-          setVehiclePanel(false)
-        }}
-        className='p-3 text-center w-[93%] absolute top-0 '><i className='text-3xl text-gray-400 ri-arrow-down-wide-line'></i></h5>
-        <h3 className='text-2xl font-semibold mb-5'>Choose a  Vehicle</h3>
-        <div className='flex border-2 mb-2 active:border-black bg-gray-100 translate-y-full rounded-xl  items-center justify-between p-3'>
-          <img className='h-12' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCtoYgO1l_DEsuaPJm3a8WJ4vNfK-A-WnD7rgMyZc3I9fMuXnQzZzGtuUP&s=10" alt="" />
-          <div className=' w-1/2'>
-            <h4 className='font-medium text-base'> UberGo <span><i className='ri-user-3-fill'></i>4</span>    </h4>
-            <h5 className='font-medium text-sm'>2 mins away</h5>
-            <p className='font-normal text-xs text-gray-600'>Affordable, compact rides</p>
-          </div>
-          <h2 className='text-xl font-semibold'>rs193.20</h2>
-        </div>
+      <div ref={vehiclePanelRef} className='fixed w-full z-10 bg-white bottom-0 px-3 py-10 pt-14 translate-y-full'>
+        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+      </div>
 
-        <div className='flex border-2 mb-2 active:border-black bg-gray-100 rounded-xl  items-center justify-between p-3'>
-          <img className='h-12' src="https://img.autocarpro.in/autocarpro/4d3ef0c9-c75e-46a3-af25-fab216e0bfe8_Untitled.jpg?w=750&h=490&q=75&c=1" alt="" />
-          <div className=' w-1/2'>
-            <h4 className='font-medium text-base'> Moto <span><i className='ri-user-3-fill'></i>1</span>    </h4>
-            <h5 className='font-medium text-sm'>3 mins away</h5>
-            <p className='font-normal text-xs text-gray-600'>Affordable, motorcycle rides</p>
-          </div>
-          <h2 className='text-xl font-semibold'>rs65.20</h2>
-        </div>
-
-        <div className='flex border-2 mb-2 active:border-black bg-gray-100 rounded-xl  items-center justify-between p-3'>
-          <img className='h-12' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSypcJwGKaAvAV_zkUSnCSZCRZyPKRS8xh9p5r7FPHyfQ&s=10" alt="" />
-          <div className=' w-1/2'>
-            <h4 className='font-medium text-base'> Auto <span><i className='ri-user-3-fill'></i>3</span>    </h4>
-
-            <h5 className='font-medium text-sm'>4 mins away</h5>
-            <p className='font-normal text-xs text-gray-600'>Affordable, auto rides</p>
-          </div>
-          <h2 className='text-xl font-semibold'>rs155.20</h2>
-        </div>
-
+            <div ref={confirmRidePanelRef} className='fixed w-full z-10 bg-white bottom-0 px-3 py-10 pt-14 translate-y-full'>
+              <ConfirmedRide  />
       </div>
     </div>
   )
