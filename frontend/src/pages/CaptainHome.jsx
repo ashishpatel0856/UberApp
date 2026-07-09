@@ -8,7 +8,7 @@ import gsap from 'gsap'
 import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(false)
+  const [ridePopupPanel, setRidePopupPanel] = useState(true)
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
   const ridePopupPanelRef = useRef(null)
   const confirmRidePopupPanelRef = useRef(null)
