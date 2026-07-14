@@ -7,7 +7,7 @@ import LiveTracking from '../components/LiveTracking'
 
 const CaptainRiding = () => {
 
-    const [ finishRidePanel, setFinishRidePanel ] = useState(false)
+    const [finishRidePanel, setFinishRidePanel] = useState(false)
     const finishRidePanelRef = useRef(null)
     const location = useLocation()
     const rideData = location.state?.ride
@@ -24,7 +24,7 @@ const CaptainRiding = () => {
                 transform: 'translateY(100%)'
             })
         }
-    }, [ finishRidePanel ])
+    }, [finishRidePanel])
 
 
     return (

@@ -1,6 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+
 
 const ConfirmRidePopUp = (props) => {
+    const [otp, setOtp] = useState('')
+
+    const submitHandler = (e) => {
+        e.preventDeafault();
+    }
     return (
         <div>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -39,18 +46,23 @@ const ConfirmRidePopUp = (props) => {
                     </div>
                 </div>
 
-                {/* <div className='mt-5 w-full '>
-                    <button onClick={() => {
-                        props.setConfirmRidePopupPanel(true)
-                    }} className=' bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg'>Confirm</button> */}
+                <div className='mt-6 w-full'>
+                    <form onSubmit={(e) => {
+                        submitHandler(e)
+                    }}>
+                        <input value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            type="text"
+                            className='bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3' placeholder='Enter OTP' />
 
-                 <Link to= '/captain-riding'  className=' bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg'>Confirm</Link>
-                    <button onClick={() => {
-                        props.setConfirmRidePopupPanel(false)
-                        props.setRidePopupPanel(false)
+                        <Link to='/captain-riding' className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'>Confirm</Link>
+                        <button onClick={() => {
+                            props.setConfirmRidePopupPanel(false)
+                            props.setRidePopupPanel(false)
+
                         }} className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
 
-
+                    </form>
                 </div>
             </div>
         </div>
