@@ -7,6 +7,8 @@ module.exports.getAddressCoordinate = async (address) => {
 
     try {
         const response = await axios.get(url);
+            console.log(response.data);
+
         if (response.data.status === 'OK') {
             const location = response.data.results[0].geometry.location;
             return {
