@@ -480,8 +480,127 @@ Log out the authenticated captain by clearing the auth token and blacklisting it
 - Status: `401 Unauthorized`
 - Body:
 
-```json
-{
-  "message": "Unauthorized"
-}
-```
+
+// ...existing code...
+
+## Maps Endpoints
+
+Requires GEOAPIFY_API_KEY in env and authenticated requests (auth middleware).
+
+- GET /maps/get-coordinates
+  - Query: address (string, min 3) — required
+  - Response 200:
+    ```json
+    { "ltd": 12.3456, "lng": 78.9012 }
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 404 coordinates not found
+
+- GET /maps/get-distance-time
+  - Query: origin (string, min 3), destination (string, min 3) — required
+  - Response 200:
+    ```json
+    {
+      "distance": { "text": "12.34 km", "value": 12340 },
+      "duration": { "text": "15 mins", "value": 900 }
+    }
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 500 internal server error
+
+- GET /maps/get-suggestions
+  - Query: input (string, min 3) — required
+  - Response 200:
+    ```json
+    ["Formatted address 1", "Formatted address 2"]
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 500 internal server error
+
+Notes
+- Controller: backend/controllers/maps.controller.js
+- Service: backend/services/maps.service.js (uses Geoapify geocode, routing, autocomplete)
+- Routes: backend/routes/maps.routes.js (uses express-validator + auth.middleware)
+
+Example curl (Windows PowerShell):
+- Get coordinates:
+  curl "http://localhost:3000/maps/get-coordinates?address=221B%20Baker%20St" -H "Authorization: Bearer <token>"
+- Get distance & time:
+  curl "http://localhost:3000/maps/get-distance-time?origin=Origin%20Address&destination=Destination%20Address" -H "Authorization: Bearer <token>"
+- Get suggestions:
+  curl "http://localhost:3000/maps/get-suggestions?input=1600+Penn" -H "Authorization: Bearer <token>"
+
+Environment
+- Set GEOAPIFY_API_KEY before starting the server.
+
+Integration
+- Validation is applied via express-validator in routes; controller returns 400 when validation fails.
+- Service throws on missing/invalid data; controller maps service errors to appropriate HTTP responses.
+```// filepath: e:\UberApp\backend\README.md
+// ...existing code...
+
+## Maps Endpoints
+
+Requires GEOAPIFY_API_KEY in env and authenticated requests (auth middleware).
+
+- GET /maps/get-coordinates
+  - Query: address (string, min 3) — required
+  - Response 200:
+    ```json
+    { "ltd": 12.3456, "lng": 78.9012 }
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 404 coordinates not found
+
+- GET /maps/get-distance-time
+  - Query: origin (string, min 3), destination (string, min 3) — required
+  - Response 200:
+    ```json
+    {
+      "distance": { "text": "12.34 km", "value": 12340 },
+      "duration": { "text": "15 mins", "value": 900 }
+    }
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 500 internal server error
+
+- GET /maps/get-suggestions
+  - Query: input (string, min 3) — required
+  - Response 200:
+    ```json
+    ["Formatted address 1", "Formatted address 2"]
+    ```
+  - Errors:
+    - 400 validation errors
+    - 401 unauthorized
+    - 500 internal server error
+
+Notes
+- Controller: backend/controllers/maps.controller.js
+- Service: backend/services/maps.service.js (uses Geoapify geocode, routing, autocomplete)
+- Routes: backend/routes/maps.routes.js (uses express-validator + auth.middleware)
+
+Example curl (Windows PowerShell):
+- Get coordinates:
+  curl "http://localhost:3000/maps/get-coordinates?address=221B%20Baker%20St" -H "Authorization: Bearer <token>"
+- Get distance & time:
+  curl "http://localhost:3000/maps/get-distance-time?origin=Origin%20Address&destination=Destination%20Address" -H "Authorization: Bearer <token>"
+- Get suggestions:
+  curl "http://localhost:3000/maps/get-suggestions?input=1600+Penn" -H "Authorization: Bearer <token>"
+
+Environment
+- Set GEOAPIFY_API_KEY before starting the server.
+
+Integration
+- Validation is applied via express-validator in routes; controller returns 400 when validation fails.
+- Service throws on missing/invalid data; controller maps service errors to appropriate HTTP responses.
