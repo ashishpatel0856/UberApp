@@ -1,73 +1,130 @@
-const axios = require('axios');
+const axios = require("axios");
 
+const apiKey = process.env.GEOAPIFY_API_KEY;
+
+// ========================
+// Get Coordinates
+// ========================
 module.exports.getAddressCoordinate = async (address) => {
-    const apiKey = process.env.GOOGLE_MAPS_API;
-    console.log(process.env.GOOGLE_MAPS_API);
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+    const url =
+        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=${apiKey}`;
 
     try {
+
         const response = await axios.get(url);
-            console.log(response.data);
 
-        if (response.data.status === 'OK') {
-            const location = response.data.results[0].geometry.location;
-            return {
-                ltd: location.lat,
-                lng: location.lng
-            };
-        } else {
-            throw new Error('Unable to fetch coordinates');
+        if (!response.data.features.length) {
+            throw new Error("Address not found");
         }
-    } catch (error) {
-        console.error(error);
-        throw error;
+
+        const coordinates =
+            response.data.features[0].geometry.coordinates;
+
+        return {
+            ltd: coordinates[1], // same response as your project
+            lng: coordinates[0]
+        };
+
+    } catch (err) {
+        console.log(err);
+        throw err;
     }
-}
+
+};
 
 
+// ========================
+// Get Distance & Time
+// ========================
 module.exports.getDistanceTime = async (origin, destination) => {
+
     if (!origin || !destination) {
-        throw new Error('Origin and destination ae required');
+        throw new Error("Origin and destination are required");
     }
 
-    const apiKey = process.env.GOOGLE_MAPS_API;
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
     try {
-        const response = await axios.get(url);
-        if (response.data.status === 'OK') {
 
-            if (response.data.rows[0].elements[0].status === 'ZERO_RESULTS') {
-                throw new Error('No routes found');
+        // Origin Coordinates
+        const originData = await module.exports.getAddressCoordinate(origin);
+
+        // Destination Coordinates
+        const destinationData =
+            await module.exports.getAddressCoordinate(destination);
+
+        const url =
+            `https://api.geoapify.com/v1/routing?waypoints=${originData.ltd},${originData.lng}|${destinationData.ltd},${destinationData.lng}&mode=drive&apiKey=${apiKey}`;
+
+        const response = await axios.get(url);
+
+        if (!response.data.features.length) {
+            throw new Error("Route not found");
+        }
+
+        const properties =
+            response.data.features[0].properties;
+
+        return {
+
+            distance: {
+
+                text:
+                    (properties.distance / 1000).toFixed(2) + " km",
+
+                value:
+                    properties.distance
+
+            },
+
+            duration: {
+
+                text:
+                    Math.ceil(properties.time / 60) + " mins",
+
+                value:
+                    properties.time
+
             }
-            return response.data.rows[0].elements[0];
-        } else {
-            throw new Error('Unable to fetch distance and time');
-        }
+
+        };
+
     } catch (err) {
-        console.error(err);
+
+        console.log(err);
+
         throw err;
+
     }
-}
+
+};
 
 
-
+// ========================
+// Autocomplete
+// ========================
 module.exports.getAutoCompleteSuggestions = async (input) => {
-    if (!input) {
-        throw new Error('query is required');
-    }
 
-    const apiKey = process.env.GOOGLE_MAPS_API;
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
+    if (!input) {
+
+        throw new Error("Input is required");
+
+    }
 
     try {
+
+        const url =
+            `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(input)}&apiKey=${apiKey}`;
+
         const response = await axios.get(url);
-        if (response.data.status === 'OK') {
-            return response.data.predictions.map(prediction => prediction.description).filter(value => value);
-        } else {
-            throw new Error('Unable to fetch suggestions');
-        }
+
+        return response.data.features.map(item => item.properties.formatted);
+
     } catch (err) {
-        console.error(err);
+
+        console.log(err);
+
         throw err;
+
     }
-}
+
+};
