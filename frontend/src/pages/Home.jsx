@@ -9,7 +9,7 @@ import LookingFormDriver from '../components/LookingFormDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { SocketContext } from '../context/SocketContext';
+import { SocketContext } from '../context/SocketContext';
 import LiveTracking from '../components/LiveTracking';
 import { UserDataContext } from '../context/UserContext';
 import axios from "axios";
@@ -38,26 +38,25 @@ const Home = () => {
   const [ride, setRide] = useState(null);
 
   const navigate = useNavigate()
-  // const { socket } = useContext(SocketContext)
+  const { socket } = useContext(SocketContext)
   const { user } = useContext(UserDataContext)
 
-  // useEffect(() => {
-  //     socket.emit("join", { userType: "user", userId: user._id })
-  // }, [ user ])
+  useEffect(() => {
+      socket.emit("join", { userType: "user", userId: user._id })
+  }, [ user ])
 
-  // socket.on('ride-confirmed', ride => {
+  socket.on('ride-confirmed', ride => {
 
+      setVehicleFound(false)
+      setWaitingForDriver(true)
+      setRide(ride)
+  })
 
-  //     setVehicleFound(false)
-  //     setWaitingForDriver(true)
-  //     setRide(ride)
-  // })
-
-  // socket.on('ride-started', ride => {
-  //     console.log("ride")
-  //     setWaitingForDriver(false)
-  //     navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-  // })
+  socket.on('ride-started', ride => {
+      console.log("ride")
+      setWaitingForDriver(false)
+      navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
+  })
 
 
   const handlePickupChange = async (e) => {

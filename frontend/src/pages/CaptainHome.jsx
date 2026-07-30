@@ -1,8 +1,9 @@
-import React, { useRef } from 'react'
+import React, { useRef ,useState} from 'react'
 import { Link } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
-import { useState } from 'react'
+import { useEffect, useContext } from 'react'
+
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
@@ -13,6 +14,7 @@ const CaptainHome = () => {
   const ridePopupPanelRef = useRef(null)
   const confirmRidePopupPanelRef = useRef(null)
 
+    // const [ ride, setRide ] = useState(null)
 
 
   useGSAP(function () {
