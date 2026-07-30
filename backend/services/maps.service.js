@@ -1,10 +1,10 @@
+const captainModel = require('../models/captain.model');
 const axios = require("axios");
 
 const apiKey = process.env.GEOAPIFY_API_KEY;
 
-// ========================
 // Get Coordinates
-// ========================
+
 module.exports.getAddressCoordinate = async (address) => {
 
     const url =
@@ -34,9 +34,7 @@ module.exports.getAddressCoordinate = async (address) => {
 };
 
 
-// ========================
 // Get Distance & Time
-// ========================
 module.exports.getDistanceTime = async (origin, destination) => {
 
     if (!origin || !destination) {
@@ -99,9 +97,7 @@ module.exports.getDistanceTime = async (origin, destination) => {
 };
 
 
-// ========================
 // Autocomplete
-// ========================
 module.exports.getAutoCompleteSuggestions = async (input) => {
 
     if (!input) {
@@ -128,3 +124,13 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
     }
 
 };
+
+
+module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+
+    const captains = await captainModel.find({});
+
+    console.log("All Captains:", captains);
+
+    return captains;
+}

@@ -7,50 +7,51 @@ let io;
 function initializeSocket(server) {
     io = socketIo(server, {
         cors: {
-            origin: '*',
-            methods: [ 'GET', 'POST' ]
+            // origin: '*',
+                origin: "http://localhost:5173",
+            methods: ['GET', 'POST'],
+             credentials: true
         }
     });
 
-    io.on('connection', (socket) => {
-        console.log(`Client connected: ${socket.id}`);
+    io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
 
+    socket.on("join", async (data) => {
+    const { userId, userType } = data;
 
-        socket.on('join', async (data) => {
-            const { userId, userType } = data;
+    if (userType === "user") {
+        const user = await userModel.findByIdAndUpdate(
+            userId,
+            { socketId: socket.id },
+            { new: true }
+        );
 
-            if (userType === 'user') {
-                await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
-            } else if (userType === 'captain') {
-                await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
-            }
-        });
+        console.log("Join Data:", data);
+        console.log("Updated User:", user);
+    }
 
+    if (userType === "captain") {
+        const captain = await captainModel.findByIdAndUpdate(
+            userId,
+            { socketId: socket.id },
+            { new: true }
+        );
 
-        socket.on('update-location-captain', async (data) => {
-            const { userId, location } = data;
+        console.log("Updated Captain:", captain);
+    }
+});
 
-            if (!location || !location.ltd || !location.lng) {
-                return socket.emit('error', { message: 'Invalid location data' });
-            }
-
-            await captainModel.findByIdAndUpdate(userId, {
-                location: {
-                    ltd: location.ltd,
-                    lng: location.lng
-                }
-            });
-        });
-
-        socket.on('disconnect', () => {
-            console.log(`Client disconnected: ${socket.id}`);
-        });
+    socket.on("disconnect", (reason) => {
+        console.log("Client disconnected:", socket.id);
+        console.log("Reason:", reason);
     });
+});
 }
 
 const sendMessageToSocketId = (socketId, messageObject) => {
 
-console.log(messageObject);
+    console.log(messageObject);
 
     if (io) {
         io.to(socketId).emit(messageObject.event, messageObject.data);

@@ -42,30 +42,44 @@ const Home = () => {
   const { user } = useContext(UserDataContext)
 
   useEffect(() => {
-      socket.emit("join", { userType: "user", userId: user._id })
-  }, [ user ])
 
-  socket.on('ride-confirmed', ride => {
+    if (!user?._id) return;
 
-      setVehicleFound(false)
-      setWaitingForDriver(true)
-      setRide(ride)
-  })
+    socket.emit("join", {
+      userType: "user",
+      userId: user._id
+    });
 
-  socket.on('ride-started', ride => {
-      console.log("ride")
-      setWaitingForDriver(false)
-      navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-  })
+  }, [user]);
+
+  useEffect(() => {
+
+    socket.on("ride-confirmed", ride => {
+      setVehicleFound(false);
+      setWaitingForDriver(true);
+      setRide(ride);
+    });
+
+    socket.on("ride-started", ride => {
+      setWaitingForDriver(false);
+      navigate("/riding", { state: { ride } });
+    });
+
+    return () => {
+      socket.off("ride-confirmed");
+      socket.off("ride-started");
+    };
+
+  }, []);
 
 
   const handlePickupChange = async (e) => {
-const value = e.target.value;
-  setPickup(value);
-       if (value.trim().length < 3) {
-    setPickupSuggestions([]);
-    return;
-  }
+    const value = e.target.value;
+    setPickup(value);
+    if (value.trim().length < 3) {
+      setPickupSuggestions([]);
+      return;
+    }
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
         params: { input: e.target.value },
@@ -75,19 +89,19 @@ const value = e.target.value;
 
       })
       setPickupSuggestions(response.data)
-    } catch(err) {
+    } catch (err) {
       console.log(err.response?.data);
     }
   }
 
   const handleDestinationChange = async (e) => {
-const value = e.target.value;
-  setDestination(value);
+    const value = e.target.value;
+    setDestination(value);
 
-  if (value.trim().length < 3) {
-    setDestinationSuggestions([]);
-    return;
-  }    try {
+    if (value.trim().length < 3) {
+      setDestinationSuggestions([]);
+      return;
+    } try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
         params: { input: e.target.value },
         headers: {
@@ -95,8 +109,8 @@ const value = e.target.value;
         }
       })
       setDestinationSuggestions(response.data)
-    } catch(err) {
-          console.log(err.response?.data);
+    } catch (err) {
+      console.log(err.response?.data);
     }
   }
 
@@ -211,10 +225,11 @@ const value = e.target.value;
     <div className='h-screen relative overflow-hidden'>
       <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
       <div className="absolute inset-0 z-0">
-    <LiveTracking />
-</div>
-      <div className=' flex flex-col justify-end h-screen absolute top-0 w-full'>
-        <div className='h-[30%] p-6 bg-white relative'>
+        <LiveTracking />
+      </div>
+      <div
+        className="flex flex-col justify-end h-screen absolute top-0 w-full pointer-events-none">
+        <div className="h-[30%] p-6 bg-white relative pointer-events-auto">
           <h5 ref={panelCloseRef} onClick={() => {
             setPanelOpen(false)
           }} className='absolute opacity-0 right-6 top-6 text-2xl'>
@@ -276,7 +291,6 @@ const value = e.target.value;
           destination={destination}
           fare={fare}
           vehicleType={vehicleType}
-
           setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
       <div ref={vehicleFoundRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12'>
