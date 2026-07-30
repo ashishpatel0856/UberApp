@@ -61,7 +61,12 @@ const Home = () => {
 
 
   const handlePickupChange = async (e) => {
-    setPickup(e.target.value)
+const value = e.target.value;
+  setPickup(value);
+       if (value.trim().length < 3) {
+    setPickupSuggestions([]);
+    return;
+  }
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
         params: { input: e.target.value },
@@ -71,14 +76,19 @@ const Home = () => {
 
       })
       setPickupSuggestions(response.data)
-    } catch {
-      // handle error
+    } catch(err) {
+      console.log(err.response?.data);
     }
   }
 
   const handleDestinationChange = async (e) => {
-    setDestination(e.target.value)
-    try {
+const value = e.target.value;
+  setDestination(value);
+
+  if (value.trim().length < 3) {
+    setDestinationSuggestions([]);
+    return;
+  }    try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
         params: { input: e.target.value },
         headers: {
@@ -86,8 +96,8 @@ const Home = () => {
         }
       })
       setDestinationSuggestions(response.data)
-    } catch {
-      // handle error
+    } catch(err) {
+          console.log(err.response?.data);
     }
   }
 
@@ -177,6 +187,7 @@ const Home = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     })
+    console.log(response.data)
 
 
     setFare(response.data)
@@ -200,14 +211,9 @@ const Home = () => {
   return (
     <div className='h-screen relative overflow-hidden'>
       <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
-      <div className="h-screen w-screen relative">
-        <LiveTracking />
-
-        {/* Pickup / Destination Panel */}
-        <div className="absolute top-0 left-0 w-full z-10">
-          {/* Form */}
-        </div>
-      </div>
+      <div className="absolute inset-0 z-0">
+    <LiveTracking />
+</div>
       <div className=' flex flex-col justify-end h-screen absolute top-0 w-full'>
         <div className='h-[30%] p-6 bg-white relative'>
           <h5 ref={panelCloseRef} onClick={() => {

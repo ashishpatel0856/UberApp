@@ -83,26 +83,25 @@ const LiveTracking = () => {
   }, []);
 
   return (
+  <div className="absolute inset-0 z-0">
     <MapContainer
       center={currentPosition}
       zoom={15}
-      style={{
-        width: "100%",
-        height: "100%",
-      }}
+      className="h-full w-full"
     >
       <ChangeView center={currentPosition} />
 
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="© OpenStreetMap contributors"
       />
 
       <Marker position={currentPosition}>
         <Popup>Your Current Location</Popup>
       </Marker>
     </MapContainer>
-  );
+  </div>
+);
 };
 
 export default LiveTracking;
