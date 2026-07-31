@@ -41,5 +41,10 @@ router.post('/end-ride',
     rideController.endRide
 )
 
+router.get(
+   "/current",
+   authMiddleware.authUser,
+   rideController.getCurrentRide
+);
 
 module.exports = router;

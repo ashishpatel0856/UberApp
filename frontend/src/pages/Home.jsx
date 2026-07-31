@@ -41,23 +41,84 @@ const Home = () => {
   const { socket } = useContext(SocketContext)
   const { user } = useContext(UserDataContext)
 
-  useEffect(() => {
+useEffect(() => {
+    console.log("User:", user);
+    console.log("Socket Connected:", socket.connected);
+    console.log("Socket ID:", socket.id);
 
+    if (!socket) return;
     if (!user?._id) return;
 
-    socket.emit("join", {
-      userType: "user",
-      userId: user._id
+    if (socket.connected) {
+
+        console.log("Joining with", socket.id);
+        socket.emit("join", {
+            userType: "user",
+            userId: user._id
+        });
+
+    }
+
+    socket.on("connect", () => {
+        console.log("Rejoining...", socket.id);
+
+        socket.emit("join", {
+            userType: "user",
+            userId: user._id
+        });
+
     });
 
-  }, [user]);
+    return () => {
+        socket.off("connect");
+    }
+
+}, [socket, user]);
+
+
+
+useEffect(() => {
+
+    const fetchCurrentRide = async () => {
+        try {
+
+            const res = await axios.get(
+                `${import.meta.env.VITE_BASE_URL}/rides/current`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+
+            console.log("Current Ride:", res.data);
+
+            if (res.data) {
+                setRide(res.data);
+
+                if (res.data.status === "accepted") {
+                    setWaitingForDriver(true);
+                }
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    fetchCurrentRide();
+
+}, []);
 
   useEffect(() => {
+    console.log("Listening for ride-confirmed");
 
     socket.on("ride-confirmed", ride => {
+        console.log("🔥 Ride Confirmed Event", ride);
+      setRide(ride);
       setVehicleFound(false);
       setWaitingForDriver(true);
-      setRide(ride);
+      
     });
 
     socket.on("ride-started", ride => {
@@ -70,7 +131,7 @@ const Home = () => {
       socket.off("ride-started");
     };
 
-  }, []);
+  }, [socket]);
 
 
   const handlePickupChange = async (e) => {
@@ -268,7 +329,7 @@ const Home = () => {
             Find Trip
           </button>
         </div>
-        <div ref={panelRef} className='bg-white h-0'>
+        <div ref={panelRef} className='bg-white h-0 pointer-events-auto'>
           <LocationSearchPanel
             suggestions={activeField === 'pickup' ? pickupSuggestions : destinationSuggestions}
             setPanelOpen={setPanelOpen}
@@ -293,7 +354,9 @@ const Home = () => {
           vehicleType={vehicleType}
           setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
+      
       <div ref={vehicleFoundRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12'>
+
         <LookingFormDriver
           createRide={createRide}
           pickup={pickup}
@@ -302,6 +365,7 @@ const Home = () => {
           vehicleType={vehicleType}
           setVehicleFound={setVehicleFound} />
       </div>
+
       <div ref={waitingForDriverRef} className='fixed w-full  z-10 bottom-0  bg-white px-3 py-6 pt-12'>
         <WaitingForDriver
           ride={ride}

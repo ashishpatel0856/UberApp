@@ -12,7 +12,7 @@ import { CaptainDataContext } from '../context/CaptainContext'
 import axios from "axios";
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(true)
+  const [ridePopupPanel, setRidePopupPanel] = useState(false)
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
   const ridePopupPanelRef = useRef(null)
   const confirmRidePopupPanelRef = useRef(null)
@@ -23,63 +23,79 @@ const CaptainHome = () => {
   const { captain } = useContext(CaptainDataContext)
 
   useEffect(() => {
-
-    if (!captain?._id) return;
+    if (!socket || !captain?._id) return;
 
     socket.emit("join", {
       userId: captain._id,
-      userType: "captain"
+      userType: "captain",
     });
 
     const updateLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        socket.emit("update-location-captain", {
+          userId: captain._id,
+          location: {
+            ltd: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+        });
+      });
+    };
 
-          socket.emit('update-location-captain', {
-            userId: captain._id,
-            location: {
-              ltd: position.coords.latitude,
-              lng: position.coords.longitude
-            }
-          })
-        })
-      }
-    }
+    updateLocation();
 
-    const locationInterval = setInterval(updateLocation, 10000)
-    updateLocation()
+    const interval = setInterval(updateLocation, 10000);
 
-    // return () => clearInterval(locationInterval)
-  }, [])
+    return () => clearInterval(interval);
+
+  }, [socket, captain]);
 
   useEffect(() => {
-    socket.on("new-ride", (data) => {
-      console.log( data);
+    if (!socket) return;
+
+    const handleNewRide = (data) => {
+      console.log("NEW RIDE RECEIVED:", data);
       setRide(data);
       setRidePopupPanel(true);
-    });
+    };
+
+    socket.on("new-ride", handleNewRide);
+
     return () => {
-      socket.off("new-ride");
-    }
-  }, []);
+      socket.off("new-ride", handleNewRide);
+    };
+  }, [socket]);
 
   async function confirmRide() {
+    if (!ride) {
+      console.log("Ride not found");
+      return;
+    }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
+    if (!captain?._id) {
+      console.log("Captain not loaded");
+      return;
+    }
 
-      rideId: ride._id,
-      captainId: captain._id,
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/confirm`,
+        {
+          rideId: ride._id,
+          captainId: captain._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-
-    setRidePopupPanel(false)
-    setConfirmRidePopupPanel(true)
-
+      setRidePopupPanel(false);
+      setConfirmRidePopupPanel(true);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
 
