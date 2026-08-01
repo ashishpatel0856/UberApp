@@ -1,5 +1,16 @@
 # Backend API Documentation
 
+This backend exposes the following route groups:
+
+- `/users`
+- `/captains`
+- `/maps`
+- `/rides`
+
+All authenticated routes support either the `Authorization: Bearer <jwt-token>` header or the `token` cookie.
+
+---
+
 ## POST /users/register
 
 Create a new user account.
@@ -9,8 +20,6 @@ Create a new user account.
 `POST /users/register`
 
 ### Request Body
-
-The request must be sent as JSON and include the following fields:
 
 - `fullname.firstname` (string, required): User first name, minimum 3 characters.
 - `fullname.lastname` (string, optional): User last name, minimum 3 characters if provided.
@@ -66,11 +75,7 @@ Example request body:
 }
 ```
 
-### Notes
-
-- The endpoint validates email format and password length.
-- The controller currently expects `firstname`, `lastname`, `email`, and `password` from `req.body`.
-- The response includes an authentication token and the created user object.
+---
 
 ## POST /users/login
 
@@ -81,8 +86,6 @@ Authenticate an existing user and return a JWT token.
 `POST /users/login`
 
 ### Request Body
-
-The request must be sent as JSON and include the following fields:
 
 - `email` (string, required): Valid email address.
 - `password` (string, required): Password, minimum 6 characters.
@@ -143,9 +146,11 @@ Example request body:
 }
 ```
 
+---
+
 ## GET /users/profile
 
-Get the authenticated user's profile.
+Return the authenticated user's profile.
 
 ### Endpoint
 
@@ -153,8 +158,8 @@ Get the authenticated user's profile.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -185,9 +190,11 @@ Get the authenticated user's profile.
 }
 ```
 
+---
+
 ## GET /users/logout
 
-Log out the authenticated user by clearing the auth token and blacklisting it.
+Log out the authenticated user, clear the token cookie, and blacklist the token.
 
 ### Endpoint
 
@@ -195,8 +202,8 @@ Log out the authenticated user by clearing the auth token and blacklisting it.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -220,20 +227,7 @@ Log out the authenticated user by clearing the auth token and blacklisting it.
 }
 ```
 
-- Status: `400 Bad Request`
-- Body:
-
-```json
-{
-  "errors": [
-    {
-      "msg": "Invalid Email",
-      "param": "email",
-      "location": "body"
-    }
-  ]
-}
-```
+---
 
 ## POST /captains/register
 
@@ -244,8 +238,6 @@ Create a new captain account.
 `POST /captains/register`
 
 ### Request Body
-
-The request must be sent as JSON and include the following fields:
 
 - `fullname.firstname` (string, required): Captain first name, minimum 3 characters.
 - `fullname.lastname` (string, optional): Captain last name, minimum 3 characters if provided.
@@ -318,11 +310,7 @@ Example request body:
 }
 ```
 
-### Notes
-
-- The endpoint validates the captain email, password, and vehicle details.
-- The controller checks whether a captain already exists with the same email before registration.
-- The response includes an authentication token and the created captain object without the password field.
+---
 
 ## POST /captains/login
 
@@ -333,8 +321,6 @@ Authenticate an existing captain and return a JWT token.
 `POST /captains/login`
 
 ### Request Body
-
-The request must be sent as JSON and include the following fields:
 
 - `email` (string, required): Valid email address.
 - `password` (string, required): Password, minimum 8 characters.
@@ -402,9 +388,11 @@ Example request body:
 }
 ```
 
+---
+
 ## GET /captains/profile
 
-Get the authenticated captain's profile.
+Return the authenticated captain's profile.
 
 ### Endpoint
 
@@ -412,8 +400,8 @@ Get the authenticated captain's profile.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -451,9 +439,11 @@ Get the authenticated captain's profile.
 }
 ```
 
+---
+
 ## GET /captains/logout
 
-Log out the authenticated captain by clearing the auth token and blacklisting it.
+Log out the authenticated captain, clear the token cookie, and blacklist the token.
 
 ### Endpoint
 
@@ -461,8 +451,8 @@ Log out the authenticated captain by clearing the auth token and blacklisting it
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -486,6 +476,8 @@ Log out the authenticated captain by clearing the auth token and blacklisting it
 }
 ```
 
+---
+
 ## GET /maps/get-coordinates
 
 Get geographic coordinates for a given address.
@@ -500,8 +492,8 @@ Get geographic coordinates for a given address.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -532,10 +524,7 @@ Get geographic coordinates for a given address.
 }
 ```
 
-### Notes
-
-- This route calls a geocoding service to return latitude and longitude.
-- It requires an authenticated user via token or cookie.
+---
 
 ## GET /maps/get-distance-time
 
@@ -552,8 +541,8 @@ Get driving distance and travel time between two addresses.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -590,10 +579,7 @@ Get driving distance and travel time between two addresses.
 }
 ```
 
-### Notes
-
-- Uses the configured map/routing service to return distance and time.
-- Requires authentication via token or cookie.
+---
 
 ## GET /maps/get-suggestions
 
@@ -609,8 +595,8 @@ Get autocomplete suggestions for an address input.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -641,10 +627,7 @@ Get autocomplete suggestions for an address input.
 }
 ```
 
-### Notes
-
-- Returns address suggestions for autocomplete.
-- Requires a valid auth token or auth cookie.
+---
 
 ## POST /rides/create
 
@@ -656,8 +639,8 @@ Create a new ride request as a rider.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Request Body
 
@@ -715,6 +698,8 @@ Example request body:
 }
 ```
 
+---
+
 ## GET /rides/get-fare
 
 Calculate fare estimates for a rider route.
@@ -730,8 +715,8 @@ Calculate fare estimates for a rider route.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -763,6 +748,8 @@ Calculate fare estimates for a rider route.
 }
 ```
 
+---
+
 ## POST /rides/confirm
 
 Confirm a ride as a captain.
@@ -773,8 +760,8 @@ Confirm a ride as a captain.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Request Body
 
@@ -823,6 +810,8 @@ Example request body:
 }
 ```
 
+---
+
 ## GET /rides/start-ride
 
 Start a ride as a captain using OTP verification.
@@ -838,8 +827,8 @@ Start a ride as a captain using OTP verification.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Success Response
 
@@ -872,6 +861,8 @@ Start a ride as a captain using OTP verification.
 }
 ```
 
+---
+
 ## POST /rides/end-ride
 
 End a ride as a captain.
@@ -882,8 +873,8 @@ End a ride as a captain.
 
 ### Headers
 
-- `Authorization` (optional): `Bearer <jwt-token>`
-- The endpoint also supports the auth cookie `token` if the client sends it.
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
 
 ### Request Body
 
@@ -927,5 +918,54 @@ Example request body:
   ]
 }
 ```
+
+---
+
+## GET /rides/current
+
+Get the current active ride for the authenticated user.
+
+### Endpoint
+
+`GET /rides/current`
+
+### Headers
+
+- `Authorization`: `Bearer <jwt-token>`
+- or cookie: `token=<jwt-token>`
+
+### Success Response
+
+- Status: `200 OK`
+- Body:
+
+```json
+{
+  "_id": "<ride-id>",
+  "user": "<user-id>",
+  "captain": "<captain-id>",
+  "pickup": "25 Main Street, City",
+  "destination": "100 Market Avenue, City",
+  "status": "accepted"
+}
+```
+
+### Authentication Errors
+
+- Status: `401 Unauthorized`
+- Body:
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## Notes
+
+- Validation failures return `400 Bad Request` with an `errors` array.
+- Authentication failures return `401 Unauthorized`.
 
 
