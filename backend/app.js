@@ -15,11 +15,11 @@ const mapsRoutes = require('./routes/maps.routes')
 const rideRoutes = require('./routes/ride.routes');
 
 connectToDb();
-// app.use(cors());
-app.use(cors({
-    origin: ["http://localhost:5173", "https://uber-app-w85k-pi.vercel.app/"],
-    credentials: true
-}));
+app.use(cors());
+// app.use(cors({
+//     origin: [, "https://uber-app-w85k-pi.vercel.app/"],
+//     credentials: true
+// }));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
