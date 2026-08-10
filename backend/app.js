@@ -17,8 +17,7 @@ const rideRoutes = require('./routes/ride.routes');
 connectToDb();
 // app.use(cors());
 app.use(cors({
-    // origin: ["https://uber-app-w85k-pi.vercel.app/"],
-    origin: ["http://localhost:5173"],
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 
