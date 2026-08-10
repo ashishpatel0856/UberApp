@@ -1,63 +1,99 @@
+require('dotenv').config();
+
 const socketIo = require('socket.io');
+
 const userModel = require('./models/user.model');
 const captainModel = require('./models/captain.model');
 
 let io;
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 function initializeSocket(server) {
+
     io = socketIo(server, {
         cors: {
-            origin:process.env.FRONTEND_URL,
+            origin: allowedOrigins,
             methods: ['GET', 'POST'],
-             credentials: true
+            credentials: true
         }
     });
 
-    io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+    io.on('connection', (socket) => {
 
-    socket.on("join", async (data) => {
-    const { userId, userType } = data;
+        console.log('Client connected:', socket.id);
 
-    if (userType === "user") {
-        const user = await userModel.findByIdAndUpdate(
-            userId,
-            { socketId: socket.id },
-            { new: true }
-        );
+        socket.on('join', async (data) => {
 
-        console.log("Join Data:", data);
-        console.log("Updated User:", user);
-    }
+            try {
 
-    if (userType === "captain") {
-        const captain = await captainModel.findByIdAndUpdate(
-            userId,
-            { socketId: socket.id },
-            { new: true }
-        );
+                const { userId, userType } = data;
 
-        console.log("Updated Captain:", captain);
-    }
-});
+                console.log('Join Data:', data);
 
-    socket.on("disconnect", (reason) => {
-        console.log("Client disconnected:", socket.id);
-        console.log("Reason:", reason);
+                if (userType === 'user') {
+
+                    const user = await userModel.findByIdAndUpdate(
+                        userId,
+                        { socketId: socket.id },
+                        { new: true }
+                    );
+
+                    console.log('Updated User:', user);
+                }
+
+                if (userType === 'captain') {
+
+                    const captain = await captainModel.findByIdAndUpdate(
+                        userId,
+                        { socketId: socket.id },
+                        { new: true }
+                    );
+
+                    console.log('Updated Captain:', captain);
+                }
+
+            } catch (error) {
+
+                console.error('Join error:', error);
+
+            }
+        });
+
+        socket.on('disconnect', (reason) => {
+
+            console.log('Client disconnected:', socket.id);
+            console.log('Reason:', reason);
+
+        });
+
     });
-});
 }
 
 const sendMessageToSocketId = (socketId, messageObject) => {
 
-console.log("Sending to socket:", socketId);
-    console.log("Event:", messageObject.event);
-    console.log("Data:", messageObject.data);
-    if (io) {
-        io.to(socketId).emit(messageObject.event, messageObject.data);
-    } else {
-        console.log('Socket.io not initialized.');
-    }
-}
+    console.log('Sending to socket:', socketId);
+    console.log('Event:', messageObject.event);
+    console.log('Data:', messageObject.data);
 
-module.exports = { initializeSocket, sendMessageToSocketId };
+    if (io) {
+
+        io.to(socketId).emit(
+            messageObject.event,
+            messageObject.data
+        );
+
+    } else {
+
+        console.log('Socket.io not initialized.');
+
+    }
+};
+
+module.exports = {
+    initializeSocket,
+    sendMessageToSocketId
+};
