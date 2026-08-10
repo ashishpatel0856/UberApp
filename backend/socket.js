@@ -42,7 +42,6 @@ function initializeSocket(server) {
                         { new: true }
                     );
 
-                    console.log('Updated User:', user);
                 }
 
                 if (userType === 'captain') {
@@ -53,7 +52,6 @@ function initializeSocket(server) {
                         { new: true }
                     );
 
-                    console.log('Updated Captain:', captain);
                 }
 
             } catch (error) {
@@ -65,7 +63,6 @@ function initializeSocket(server) {
 
         socket.on('disconnect', (reason) => {
 
-            console.log('Client disconnected:', socket.id);
             console.log('Reason:', reason);
 
         });
@@ -74,10 +71,6 @@ function initializeSocket(server) {
 }
 
 const sendMessageToSocketId = (socketId, messageObject) => {
-
-    console.log('Sending to socket:', socketId);
-    console.log('Event:', messageObject.event);
-    console.log('Data:', messageObject.data);
 
     if (io) {
 
